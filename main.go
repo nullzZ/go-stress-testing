@@ -5,6 +5,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/link1st/go-stress-testing/requests"
 	"runtime"
 	"strings"
 	"time"
@@ -78,7 +79,8 @@ func main() {
 		return
 	}
 	debug := strings.ToLower(debugStr) == "true"
-	request, err := model.NewRequest(requestURL, verify, code, 0, debug, path, headers, body, maxCon, http2, keepalive)
+	body2 := requests.NewAuthC()
+	request, err := model.NewRequest(requestURL, verify, code, 0, debug, path, headers, body2, maxCon, http2, keepalive)
 	if err != nil {
 		fmt.Printf("参数不合法 %v \n", err)
 		return

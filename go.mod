@@ -7,5 +7,6 @@ require (
 	golang.org/x/net v0.0.0-20190724013045-ca1201d0de80
 	golang.org/x/text v0.3.3
 	google.golang.org/grpc v1.35.0
+	google.golang.org/protobuf v1.25.0
 	layeh.com/radius v0.0.0-20210819152912-ad72663a72ab
 )
