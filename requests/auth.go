@@ -22,3 +22,15 @@ func NewAuthC() string {
 	buf.Write(bb)
 	return buf.String()
 }
+
+func NewTestC() string {
+	accId := strconv.Itoa(int(time.Now().UnixMilli())) + strconv.Itoa(rand.Intn(1000000))
+	authC := &message.Test_C{
+		AccountId: accId,
+	}
+	buf := new(bytes.Buffer)
+	binary.Write(buf, binary.LittleEndian, message.MSG_TYPE_E_Test_C)
+	bb, _ := proto.Marshal(authC)
+	buf.Write(bb)
+	return buf.String()
+}

@@ -5,6 +5,7 @@ import (
 	"compress/gzip"
 	"context"
 	"fmt"
+	"github.com/link1st/go-stress-testing/requests"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -26,8 +27,11 @@ func HTTP(ctx context.Context, chanID uint64, ch chan<- *model.RequestResults, t
 			fmt.Printf("ctx.Err err: %v \n", ctx.Err())
 			break
 		}
-
+		body2 := requests.NewTestC()
+		request.Body = body2
+		//todo!!!!!!!!!!!!!
 		list := getRequestList(request)
+
 		isSucceed, errCode, requestTime, contentLength := sendList(chanID, list)
 		requestResults := &model.RequestResults{
 			Time:          requestTime,
