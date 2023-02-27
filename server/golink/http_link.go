@@ -2,6 +2,7 @@
 package golink
 
 import (
+	"bytes"
 	"compress/gzip"
 	"context"
 	"fmt"
@@ -9,6 +10,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"sync"
 
 	"github.com/link1st/go-stress-testing/model"
@@ -27,7 +29,12 @@ func HTTP(ctx context.Context, chanID uint64, ch chan<- *model.RequestResults, t
 			fmt.Printf("ctx.Err err: %v \n", ctx.Err())
 			break
 		}
-		body2 := requests.NewTestC()
+		//body2 := requests.NewTestC()
+		buf := bytes.Buffer{}
+		buf.WriteString(strconv.Itoa(int(chanID)))
+		buf.WriteString("_")
+		buf.WriteString(strconv.Itoa(int(i)))
+		body2 := requests.NewTestC2(buf.String())
 		request.Body = body2
 		//todo!!!!!!!!!!!!!
 		list := getRequestList(request)

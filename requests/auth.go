@@ -34,3 +34,14 @@ func NewTestC() string {
 	buf.Write(bb)
 	return buf.String()
 }
+
+func NewTestC2(id string) string {
+	authC := &message.Test_C{
+		AccountId: id,
+	}
+	buf := new(bytes.Buffer)
+	binary.Write(buf, binary.LittleEndian, message.MSG_TYPE_E_Test_C)
+	bb, _ := proto.Marshal(authC)
+	buf.Write(bb)
+	return buf.String()
+}
