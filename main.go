@@ -44,6 +44,7 @@ var (
 	keepalive          = false   // 是否开启长连接
 	cpuNumber          = 1       // CUP 核数，默认为一核，一般场景下单核已经够用了
 	timeout     int64  = 0       // 超时时间，默认不设置
+	duration    int64  = 0       //持续时间
 )
 
 func init() {
@@ -61,6 +62,7 @@ func init() {
 	flag.BoolVar(&keepalive, "k", keepalive, "是否开启长连接")
 	flag.IntVar(&cpuNumber, "cpuNumber", cpuNumber, "CUP 核数，默认为一核")
 	flag.Int64Var(&timeout, "timeout", timeout, "超时时间 单位 秒,默认不设置")
+	flag.Int64Var(&duration, "duration", duration, "超时时间 单位 秒,默认不设置")
 	// 解析参数
 	flag.Parse()
 }
@@ -99,6 +101,19 @@ func main() {
 			fmt.Printf(" deadline %s", deadline)
 		}
 	}
-	server.Dispose(ctx, concurrency, totalNumber, request)
+	if duration == 0 {
+		server.Dispose(ctx, concurrency, totalNumber, request)
+	} else {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithCancel(ctx)
+		fmt.Println("duration：", duration)
+		go func() {
+			select {
+			case <-time.After(time.Duration(duration) * time.Second):
+				cancel()
+			}
+		}()
+		server.DisposeDuration(ctx, concurrency, totalNumber, request)
+	}
 	return
 }

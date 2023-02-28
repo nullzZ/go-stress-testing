@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"compress/gzip"
 	"context"
-	"fmt"
 	"github.com/link1st/go-stress-testing/requests"
 	"io"
 	"io/ioutil"
@@ -23,10 +22,16 @@ func HTTP(ctx context.Context, chanID uint64, ch chan<- *model.RequestResults, t
 	defer func() {
 		wg.Done()
 	}()
+	HTTP2(ctx, chanID, ch, totalNumber, request)
+	return
+}
+
+func HTTP2(ctx context.Context, chanID uint64, ch chan<- *model.RequestResults, totalNumber uint64,
+	request *model.Request) {
 	// fmt.Printf("启动协程 编号:%05d \n", chanID)
 	for i := uint64(0); i < totalNumber; i++ {
 		if ctx.Err() != nil {
-			fmt.Printf("ctx.Err err: %v \n", ctx.Err())
+			//fmt.Printf("ctx.Err err: %v \n", ctx.Err())
 			break
 		}
 		//body2 := requests.NewTestC()

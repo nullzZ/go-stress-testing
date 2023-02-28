@@ -4,6 +4,7 @@ package server
 import (
 	"context"
 	"fmt"
+	"math/rand"
 	"sync"
 	"time"
 
@@ -91,6 +92,45 @@ func Dispose(ctx context.Context, concurrency, totalNumber uint64, request *mode
 			// 类型不支持
 			wg.Done()
 		}
+	}
+	// 等待所有的数据都发送完成
+	wg.Wait()
+	// 延时1毫秒 确保数据都处理完成了
+	time.Sleep(1 * time.Millisecond)
+	close(ch)
+	// 数据全部处理完成了
+	wgReceiving.Wait()
+	return
+}
+
+// DisposeDuration 持续时间
+func DisposeDuration(ctx context.Context, concurrency, totalNumber uint64, request *model.Request) {
+	// 设置接收数据缓存
+	ch := make(chan *model.RequestResults, 1000)
+	var (
+		wg          sync.WaitGroup // 发送数据完成
+		wgReceiving sync.WaitGroup // 数据处理完成
+	)
+	wgReceiving.Add(1)
+	go statistics.ReceivingResults(concurrency, ch, &wgReceiving)
+
+	for i := uint64(0); i < concurrency; i++ {
+		wg.Add(1)
+		go func(cid uint64) {
+			t := time.NewTicker(time.Duration(rand.Intn(2)+1) * time.Second)
+			for {
+				select {
+				case <-t.C:
+					switch request.Form {
+					case model.FormTypeHTTP:
+						golink.HTTP2(ctx, cid, ch, totalNumber, request)
+					}
+				case <-ctx.Done():
+					wg.Done()
+					return
+				}
+			}
+		}(i)
 	}
 	// 等待所有的数据都发送完成
 	wg.Wait()
